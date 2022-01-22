@@ -1,8 +1,8 @@
-# projeto-simian-repo
+# Instruções - Projeto Simian DNA
 API responsável por validar uma sequência de DNA e identificar corretamente símios e humanos.
+# _________________________________________________________________________________________
 
-
-1.Sincronizar o projeto
+1. Sincronizar o projeto
     - git clone https://github.com/william-sillva/projeto-simian-repo.git
 
 2. Acessar o diretório do projeto e instalar as dependências maven, se necessário.
