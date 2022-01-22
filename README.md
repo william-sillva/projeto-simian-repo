@@ -21,9 +21,14 @@ API responsável por validar uma sequência de DNA e identificar corretamente s�
    - mvn spring-boot:run
 
 6. O sistema conta com o swagger. Este pode ser acessado pela url:
-    - "/swagger-ui/index.html"
+    - http://localhost:8080/swagger-ui/index.html
+    - https://simian-api.herokuapp.com/swagger-ui/index.html
 
-Execução
-    - endpoint SIMIAN -> "/api/dnas/simian";
-    - endpoint STATS -> "/api/dnas/stats";
+Execução ENDPOINT
+   - LOCALHOST
+     - http://localhost:8080/api/dnas/simian
+     - http://localhost:8080/api/dnas/stats
+   - PRODUCAO
+     - https://simian-api.herokuapp.com/api/dnas/simian
+     - https://simian-api.herokuapp.com/api/dnas/stats
 
