@@ -54,20 +54,24 @@ public class DnaServiceImpl implements DnaService {
     public void validateDataDna(DnaModel dnaModel, BindingResult result) {
         Gson gson = new Gson();
         log.info("Validando DNA {}", gson.toJson(dnaModel.getDna()));
+        int baseMatrizLength = dnaModel.getDna().length;
 
-        if (dnaModel.getDna().length != 6) {
+        if (baseMatrizLength < 4) {
             result.addError(new ObjectError("DnaService1",
-                    "A lista de DNA deve conter 6 sequências."));
+                    "Não é possível processar matrizes menores que (4x4)."));
         }
 
         for (String dna: dnaModel.getDna()) {
-            if (dna.length() != 6) {
+            if (dna.length() != baseMatrizLength) {
                 result.addError(new ObjectError("DnaService2",
-                        "Todos os DNA's devem conter exatamente 6 caracteres."));
+                        "Os dados enviados não formam uma matriz quadrada (NxN). "
+                                .concat("Todos os DNA's devem conter exatamente "
+                                        .concat(String.valueOf(baseMatrizLength))
+                                        .concat(" caracteres."))));
                 return;
             }
 
-            if (!getOnlySpecificCharacteres(dna)) {
+            if (!getOnlySpecificCharacteres(dna, baseMatrizLength)) {
                 result.addError(new ObjectError("DnaService3",
                         "Apenas os caracteres A, T, C, G são válidos para análise."));
                 return;
@@ -77,9 +81,10 @@ public class DnaServiceImpl implements DnaService {
 
     @Override
     public Boolean isSimian(DnaModel dnaModel) {
+        int baseMatrizLength = dnaModel.getDna().length;
         List<char[]> listLines = getDnaSequenceLine(dnaModel);
-        List<char[]> listColumns = getDnaSequenceColumn(listLines);
-        List<char[]> listDiagonals = getDnaSequenceDiagonal(listLines);
+        List<char[]> listColumns = getDnaSequenceColumn(listLines, baseMatrizLength);
+        List<char[]> listDiagonals = getDnaSequenceDiagonal(listLines, baseMatrizLength);
         List<char[]> listDnas = new ArrayList<>();
 
         listDnas.addAll(listLines);
@@ -102,7 +107,7 @@ public class DnaServiceImpl implements DnaService {
         return isSimian;
     }
 
-    protected void handlePersistDnaBase(DnaModel dnaModel, Boolean isSimian) {
+    private void handlePersistDnaBase(DnaModel dnaModel, Boolean isSimian) {
         Gson gson = new Gson();
         LocalDateTime localDate = LocalDateTime.now();
         Date dtInclude = Date.from(localDate.atZone(ZoneId.systemDefault()).toInstant());
@@ -123,11 +128,11 @@ public class DnaServiceImpl implements DnaService {
         return listLines;
     }
 
-    protected List<char[]> getDnaSequenceColumn(List<char[]> listLines) {
+    protected List<char[]> getDnaSequenceColumn(List<char[]> listLines, int baseMatrizLength) {
         List<char[]> listColumns = new ArrayList<>();
         for (int i = 0; i < listLines.size(); i++) {
             StringBuilder column = new StringBuilder();
-            for (int j = 0; j < 6; j++) {
+            for (int j = 0; j < baseMatrizLength; j++) {
                 column.append(listLines.get(j)[i]);
             }
 
@@ -154,50 +159,84 @@ public class DnaServiceImpl implements DnaService {
         return diagonal.toString();
     }
 
-    protected List<char[]> getDnaSequenceDiagonal(List<char[]> listLines) {
+    protected List<char[]> getDnaSequenceDiagonal(List<char[]> listLines, int baseMatrizLength) {
         List<char[]> listDiagonals = new ArrayList<>();
-
-        String diagonal1 = getDiagonalChars(listLines, 4, 2, 0, false);
-        listDiagonals.add(diagonal1.toCharArray());
-
-        String diagonal2 = getDiagonalChars(listLines, 5, 1, 0, false);
-        listDiagonals.add(diagonal2.toCharArray());
-
-        String diagonal3 = getDiagonalChars(listLines, 6, 0, 0, false);
-        listDiagonals.add(diagonal3.toCharArray());
-
-        String diagonal4 = getDiagonalChars(listLines, 5, 0, 1, false);
-        listDiagonals.add(diagonal4.toCharArray());
-
-        String diagonal5 = getDiagonalChars(listLines, 4, 0, 2, false);
-        listDiagonals.add(diagonal5.toCharArray());
-
-        String diagonal6 = getDiagonalChars(listLines, 4, 0, 3, true);
-        listDiagonals.add(diagonal6.toCharArray());
-
-        String diagonal7 = getDiagonalChars(listLines, 5, 0, 4, true);
-        listDiagonals.add(diagonal7.toCharArray());
-
-        String diagonal8 = getDiagonalChars(listLines, 6, 0, 5, true);
-        listDiagonals.add(diagonal8.toCharArray());
-
-        String diagonal9 = getDiagonalChars(listLines, 5, 1, 5, true);
-        listDiagonals.add(diagonal9.toCharArray());
-
-        String diagonal10 = getDiagonalChars(listLines, 4, 2, 5, true);
-        listDiagonals.add(diagonal10.toCharArray());
+        listDiagonals.addAll(this.handleDiagonalsDownTop(listLines, baseMatrizLength));
+        listDiagonals.addAll(this.handleDiagonalsTopDown(listLines, baseMatrizLength));
 
         return listDiagonals;
     }
 
-    protected Boolean getOnlySpecificCharacteres(String dna) {
+    protected List<char[]> handleDiagonalsDownTop(List<char[]> listLines, int baseMatrizLength) {
+        List<char[]> listDiagonals = new ArrayList<>();
+        // 6 representa as 2 diagonais das pontas da matriz que nao sao compativeis com a analise ex: {[0,0], [[0,1], [1,0]], [[0,2],[1,1],[2,0]]}
+        int halfDiagonals = ((baseMatrizLength * 2) - 1) - 6;
+        int qtdChar = 4;
+        int initLine = (baseMatrizLength - 3) - 1;
+        int initColumn = 0;
+
+        // handle diagonal - LR
+        for (int i = 0; i < halfDiagonals; i++) {
+            if (qtdChar <= baseMatrizLength && initLine >= 0 && initColumn == 0) {
+                // recupera dados ate diagonal PRINCIPAL
+                String diagonal = getDiagonalChars(listLines, qtdChar, initLine, initColumn, false);
+                listDiagonals.add(diagonal.toCharArray());
+
+                initLine--;
+                if (qtdChar < baseMatrizLength) {
+                    qtdChar++;
+                }
+            } else {
+                initLine = 0;
+                qtdChar--;
+                initColumn++;
+                String diagonal = getDiagonalChars(listLines, qtdChar, initLine, initColumn, false);
+                listDiagonals.add(diagonal.toCharArray());
+            }
+        }
+
+        return listDiagonals;
+    }
+
+    protected List<char[]> handleDiagonalsTopDown(List<char[]> listLines, int baseMatrizLength) {
+        List<char[]> listDiagonals = new ArrayList<>();
+        // 6 representa as 2 diagonais das pontas da matriz que nao sao compativeis com a analise ex: {[0,0], [[0,1], [1,0]], [[0,2],[1,1],[2,0]]}
+        int halfDiagonals = ((baseMatrizLength * 2) - 1) - 6;
+        int qtdChar = 4;
+        int initLine = 0;
+        int initColumn = 3;
+
+        for (int i = 0; i < halfDiagonals; i++) {
+            if (qtdChar <= baseMatrizLength && initLine == 0 && initColumn < baseMatrizLength) {
+                // recupera dados ate diagonal PRINCIPAL
+                String diagonal = getDiagonalChars(listLines, qtdChar, initLine, initColumn, true);
+                listDiagonals.add(diagonal.toCharArray());
+
+                initColumn++;
+                if (qtdChar < baseMatrizLength) {
+                    qtdChar++;
+                }
+            } else {
+                initLine++;
+                qtdChar--;
+
+                String diagonal = getDiagonalChars(listLines, qtdChar, initLine, baseMatrizLength - 1, true);
+                listDiagonals.add(diagonal.toCharArray());
+            }
+        }
+
+        return listDiagonals;
+    }
+
+    protected Boolean getOnlySpecificCharacteres(String dna, int qtdBase) {
         int count = getCountCharacter(dna, BaseTypeEnum.ADENINA.getChave().charAt(0));
         count += getCountCharacter(dna, BaseTypeEnum.TIMINA.getChave().charAt(0));
         count += getCountCharacter(dna, BaseTypeEnum.CITOSINA.getChave().charAt(0));
         count += getCountCharacter(dna, BaseTypeEnum.GUANINA.getChave().charAt(0));
 
-        return count == 6;
+        return count == qtdBase;
     }
+
 
     protected Integer getCountCharacter(String dna, Character chc) {
         int count = 0;

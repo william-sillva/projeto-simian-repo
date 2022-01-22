@@ -70,18 +70,38 @@ public class DnaServiceImplTest {
         Assert.notEmpty(list, "Dna sequence line notEmpty");
     }
 
+    @Test(expected = ArrayIndexOutOfBoundsException.class)
+    public void getDnaSquenceColumnException() {
+        List<char[]> listLines = this.dnaServiceImpl.getDnaSequenceLine(getDnaModelErroDna());
+        this.dnaServiceImpl.getDnaSequenceColumn(listLines, listLines.size());
+    }
+
     @Test
     public void getDnaSquenceColumnNotNull() {
         List<char[]> listLines = this.dnaServiceImpl.getDnaSequenceLine(getDnaModelSimian());
-        List<char[]> list = this.dnaServiceImpl.getDnaSequenceColumn(listLines);
+        List<char[]> list = this.dnaServiceImpl.getDnaSequenceColumn(listLines, listLines.size());
         Assert.notNull(list, "Dna sequence column notNull");
     }
 
     @Test
     public void getDnaSquenceColumnNotEmpty() {
         List<char[]> listLines = this.dnaServiceImpl.getDnaSequenceLine(getDnaModelHuman());
-        List<char[]> list = this.dnaServiceImpl.getDnaSequenceColumn(listLines);
+        List<char[]> list = this.dnaServiceImpl.getDnaSequenceColumn(listLines, listLines.size());
         Assert.notEmpty(list, "Dna sequence column notEmpty");
+    }
+
+    @Test
+    public void getDnaSquenceExtraColumnNotNull() {
+        List<char[]> listLines = this.dnaServiceImpl.getDnaSequenceLine(getDnaModelExtra());
+        List<char[]> list = this.dnaServiceImpl.getDnaSequenceColumn(listLines, listLines.size());
+        Assert.notNull(list, "Dna sequence extra column notNull");
+    }
+
+    @Test
+    public void getDnaSquenceExtraColumnNotEmpty() {
+        List<char[]> listLines = this.dnaServiceImpl.getDnaSequenceLine(getDnaModelExtra());
+        List<char[]> list = this.dnaServiceImpl.getDnaSequenceColumn(listLines, listLines.size());
+        Assert.notEmpty(list, "Dna sequence extra column notEmpty");
     }
 
     @Test
@@ -107,26 +127,96 @@ public class DnaServiceImplTest {
     @Test
     public void getDnaSequenceDiagonalNotNull() {
         List<char[]> listLines = this.dnaServiceImpl.getDnaSequenceLine(getDnaModelSimian());
-        List<char[]> list = this.dnaServiceImpl.getDnaSequenceDiagonal(listLines);
+        List<char[]> list = this.dnaServiceImpl.getDnaSequenceDiagonal(listLines, listLines.size());
         Assert.notNull(list, "Dna sequence diagonal notNull");
     }
 
     @Test
     public void getDnaSequenceDiagonalNotEmpty() {
         List<char[]> listLines = this.dnaServiceImpl.getDnaSequenceLine(getDnaModelHuman());
-        List<char[]> list = this.dnaServiceImpl.getDnaSequenceDiagonal(listLines);
+        List<char[]> list = this.dnaServiceImpl.getDnaSequenceDiagonal(listLines, listLines.size());
         Assert.notEmpty(list, "Dna sequence diagonal notEmpty");
     }
 
     @Test
+    public void getDnaSequenceExtraDiagonalNotNull() {
+        List<char[]> listLines = this.dnaServiceImpl.getDnaSequenceLine(getDnaModelExtra());
+        List<char[]> list = this.dnaServiceImpl.getDnaSequenceDiagonal(listLines, listLines.size());
+        Assert.notNull(list, "Dna sequence extra diagonal notNull");
+    }
+
+    @Test
+    public void getDnaSequenceExtraDiagonalNotEmpty() {
+        List<char[]> listLines = this.dnaServiceImpl.getDnaSequenceLine(getDnaModelExtra());
+        List<char[]> list = this.dnaServiceImpl.getDnaSequenceDiagonal(listLines, listLines.size());
+        Assert.notEmpty(list, "Dna sequence extra diagonal notEmpty");
+    }
+
+    @Test
+    public void getHandleDiagonalsDownTopNotNull() {
+        List<char[]> listLines = this.dnaServiceImpl.getDnaSequenceLine(getDnaModelSimian());
+        List<char[]> list = this.dnaServiceImpl.handleDiagonalsDownTop(listLines, listLines.size());
+        Assert.notNull(list, "Dna sequence diagonal down top notNull");
+    }
+
+    @Test
+    public void getHandleDiagonalsDownTopNotEmpty() {
+        List<char[]> listLines = this.dnaServiceImpl.getDnaSequenceLine(getDnaModelHuman());
+        List<char[]> list = this.dnaServiceImpl.handleDiagonalsDownTop(listLines, listLines.size());
+        Assert.notEmpty(list, "Dna sequence diagonal down top notEmpty");
+    }
+
+    @Test
+    public void getHandleDiagonalsDownTopExtraNotNull() {
+        List<char[]> listLines = this.dnaServiceImpl.getDnaSequenceLine(getDnaModelExtra());
+        List<char[]> list = this.dnaServiceImpl.handleDiagonalsDownTop(listLines, listLines.size());
+        Assert.notNull(list, "Dna sequence extra diagonal down top notNull");
+    }
+
+    @Test
+    public void getHandleDiagonalsDownTopExtraNotEmpty() {
+        List<char[]> listLines = this.dnaServiceImpl.getDnaSequenceLine(getDnaModelExtra());
+        List<char[]> list = this.dnaServiceImpl.handleDiagonalsDownTop(listLines, listLines.size());
+        Assert.notEmpty(list, "Dna sequence extra diagonal down top notEmpty");
+    }
+
+    @Test
+    public void getHandleDiagonalsTopDownNotNull() {
+        List<char[]> listLines = this.dnaServiceImpl.getDnaSequenceLine(getDnaModelSimian());
+        List<char[]> list = this.dnaServiceImpl.handleDiagonalsTopDown(listLines, listLines.size());
+        Assert.notNull(list, "Dna sequence diagonal top down notNull");
+    }
+
+    @Test
+    public void getHandleDiagonalsTopDownNotEmpty() {
+        List<char[]> listLines = this.dnaServiceImpl.getDnaSequenceLine(getDnaModelHuman());
+        List<char[]> list = this.dnaServiceImpl.handleDiagonalsTopDown(listLines, listLines.size());
+        Assert.notEmpty(list, "Dna sequence diagonal top down notEmpty");
+    }
+
+    @Test
+    public void getHandleDiagonalsTopDownExtraNotNull() {
+        List<char[]> listLines = this.dnaServiceImpl.getDnaSequenceLine(getDnaModelExtra());
+        List<char[]> list = this.dnaServiceImpl.handleDiagonalsTopDown(listLines, listLines.size());
+        Assert.notNull(list, "Dna sequence extra diagonal top down notNull");
+    }
+
+    @Test
+    public void getHandleDiagonalsTopDownExtraNotEmpty() {
+        List<char[]> listLines = this.dnaServiceImpl.getDnaSequenceLine(getDnaModelExtra());
+        List<char[]> list = this.dnaServiceImpl.handleDiagonalsTopDown(listLines, listLines.size());
+        Assert.notEmpty(list, "Dna sequence extra diagonal top down notEmpty");
+    }
+
+    @Test
     public void getOnlySpecificCharacteresTrue() {
-        Boolean isValid = this.dnaServiceImpl.getOnlySpecificCharacteres("CTGAGA");
+        Boolean isValid = this.dnaServiceImpl.getOnlySpecificCharacteres("CTGAGA", 6);
         Assert.isTrue(isValid, "Valid sequence");
     }
 
     @Test
     public void getOnlySpecificCharacteresFalse() {
-        Boolean isValid = this.dnaServiceImpl.getOnlySpecificCharacteres("XTGAGX");
+        Boolean isValid = this.dnaServiceImpl.getOnlySpecificCharacteres("XTGAGX", 6);
         Assert.isTrue(!isValid, "Not valid sequence");
     }
 
@@ -224,6 +314,14 @@ public class DnaServiceImplTest {
     private DnaModel getDnaModelHuman() {
         DnaModel dnaModel = new DnaModel();
         String[] arrayDna = new String [] {"ATGCGA", "CAGTGC", "TTATTT", "AGACGG", "GCGTCA", "TCACTG"};
+        dnaModel.setDna(arrayDna);
+
+        return dnaModel;
+    }
+
+    private DnaModel getDnaModelExtra() {
+        DnaModel dnaModel = new DnaModel();
+        String[] arrayDna = new String [] {"ACTGTGCAAA","CTGTGCACTT","GGTGCAAACA","GTTCATCTTC","TAGTAGCGGG","ACCGTAGAAA","CGTGCTCAAA","TGCAGCACCC","TGCAGCACCC","TGCAGCACCC"};
         dnaModel.setDna(arrayDna);
 
         return dnaModel;

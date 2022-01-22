@@ -65,10 +65,10 @@ public class DnaBase implements Serializable {
     @Override
     public String toString() {
         return "DnaBase {" +
-                    "id=" + id +
-                    ", dtInclude=" + dtInclude +
-                    ", dna=" + dna +
-                    ", isSimian=" + isSimian +
+                    "id=" + getId() +
+                    ", dtInclude=" + getDtInclude() +
+                    ", dna=" + getDna() +
+                    ", isSimian=" + getSimian() +
                 "}";
     }
 }

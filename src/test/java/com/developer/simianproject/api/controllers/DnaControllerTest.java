@@ -76,13 +76,25 @@ public class DnaControllerTest {
     }
 
     @Test
+    public void analyzeDnaExtra() throws Exception {
+        mvc.perform(MockMvcRequestBuilders.post(URL_BASE_SIMIAN)
+                        .content(getDnaSequenceExtra())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.is_simian").value(true))
+                .andExpect(jsonPath("$.errors").isEmpty());
+    }
+
+    @Test
     public void analyzeDnaError1() throws Exception {
         mvc.perform(MockMvcRequestBuilders.post(URL_BASE_SIMIAN)
                         .content(getDnaSequenceError())
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.status().isBadRequest())
-                .andExpect(jsonPath("$.errors").value("Todos os DNA's devem conter exatamente 6 caracteres."));
+                .andExpect(jsonPath("$.errors")
+                        .value("Os dados enviados não formam uma matriz quadrada (NxN). Todos os DNA's devem conter exatamente 6 caracteres."));
     }
 
     @Test
@@ -92,7 +104,8 @@ public class DnaControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.status().isBadRequest())
-                .andExpect(jsonPath("$.errors").value("A lista de DNA deve conter 6 sequências."));
+                .andExpect(jsonPath("$.errors")
+                        .value("Os dados enviados não formam uma matriz quadrada (NxN). Todos os DNA's devem conter exatamente 7 caracteres."));
     }
 
     @Test
@@ -184,6 +197,14 @@ public class DnaControllerTest {
         return dnaModel;
     }
 
+    private DnaModel getDnaModelExtra() {
+        DnaModel dnaModel = new DnaModel();
+        String[] arrayDna = new String [] {"ACTGTGCAAA","CTGTGCACTT","GGTGCAAACA","GTTCATCTTC","TAGTAGCGGG","ACCGTAGAAA","CGTGCTCAAA","TGCAGCACCC","TGCAGCACCC","TGCAGCACCC"};
+        dnaModel.setDna(arrayDna);
+
+        return dnaModel;
+    }
+
     private String getDnaSequenceSimian() {
         Gson gson = new Gson();
         return gson.toJson(getDnaModelSimian());
@@ -207,5 +228,10 @@ public class DnaControllerTest {
     private String getDnaSequenceHuman() {
         Gson gson = new Gson();
         return gson.toJson(getDnaModelHuman());
+    }
+
+    private String getDnaSequenceExtra() {
+        Gson gson = new Gson();
+        return gson.toJson(getDnaModelExtra());
     }
 }
